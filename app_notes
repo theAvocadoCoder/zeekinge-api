@@ -1,0 +1,131 @@
+# `php artisan make:auth` set up Laravel User authentication
+
+# `php artisan make:model <Name> -mr` make model, migration table and resource controller at once
+
+# in your model, you want to specify which columns are mass-fillable. in the class, add a protected array of strings
+
+# when two tables have a many-to-many relationship, a third table has to be created to show that relationship. the names of the two tables involved should be put in alphabetical order
+
+# `php artisan make:seeder <SeederName>` create a seeder file
+
+# in the seeder, create a new entry in the table by calling the model, assign entry to a variable. the properties of the var are the columns in the table, assign as you see fit, save.
+
+# [tip:_attach_role_to_user_after_saving] [tip:_call_all_seeders_in_DatabaseSeeder]
+
+# populating the table like this means you have full control over the details. It also means that you have to manually add each entry in the table. an alternative would be using factory. do this when you want to have a full table. note that with factory, you do not get to decide what the contents of the table will be, only the data types and number of entries
+
+# in the User model, you want to check if the user has any roles. if not, use auth to logout, and abort with a 404 message [tip:_add_a_has_any_roles_method_that_checks_the_user's_roles_against_the_roles_array] [tip:_add_a_has_role_method_that_checks_the_user's_roles_against_the_input_role]
+
+# automatically attach a role to a new user in the RegisterController
+
+# `php artisan migrate:fresh --seed` migrate, using the seeders you created
+
+#
+
+###
+
+# Generate application key with: `php artisan key:generate`
+
+# Link file storage for easy access with: `php artisan storage:link`
+
+# you can pass parameters from your url as variables to be accessed in your controller or in your view
+
+# make another web route and pass it a view
+
+# directives:
+
+# if statements: @if, @else, @elseif, @endif
+
+# switch statements: `@switch($i) <new line><tab> @case(1) ... break ... @default ... @endswitch`
+
+# loops: @for @endfor, @foreach ($object as $item) @endforeach, @while @endwhile
+
+# the $loop variable breaks the fourth wall in its meta referral to itself. This allows you access certain attributes of the loop concept such as the first iteration of the loop. As implied, the $loop variable can only be accessed from within a loop.
+
+# template inheritance is a good way to reuse components in view. Laravel components also exist but can be a lot to understand at once.
+
+# Make middleware with: `php artisan make:middleware <name of middleware>`
+
+# Create migration table with: `php artisan make:migration create_<table name>_table`
+
+# Apply migration file with: `php artisan migrate`
+
+# Rollback previous migration with: `php artisan migrate:rollback`
+
+# Reset all migrations with: `php artisan migrate:reset`
+
+# The Schema class is used to create and edit db tables
+
+# Generate a seeder with: `php artisan make:seeder <name of seeder>`
+
+# Run seeder with: `php artisan db:seed <name of seeder>`
+
+# Query builder interface allows you to interact with your database by using built-in methods on the DB class. You can chain methods to add more constraints to your search
+
+# Create a model with: `php artisan make:model <name of model>`
+
+# Do this and create a corresponding migration file with: `php artisan make:model <name of model> --migration` or `php artisan make:model <name of model> -m`
+
+# Eloquent model is a powerful query builder. All query builder methods can be accessed from the model. So there's no need to import the DB class, just the model and it interacts with the database just fine
+
+# Model methods, get() and all() will return a collection. Collections offer neat methods that regular objects don't have
+
+# Your model should have a $fillable property which maps to an array of columns that are fillable
+
+# The create() method creates a new record; the update() method updates an existing record; the delete() method deletes a single record; the truncate() method mass deletes
+
+# Database relations refer to how different tables' dependencies on other tables(s) affect how they interact with one another
+
+# DB relations: one-to-one(has one), one-to-one(belongs to one), one-to-many(has many), one-to-many(belongs to one), many-to-many
+
+# When defining the DB relationships in the model, you would ideally put a method to show this. For example, a user with multiple groups would mean that the user model has a one-to-many relationship defined as: `public function group() { return $this->hasMany(Group::class) }` while the group model would be defined as: `public function user() { return $this->belongsTo(User::class) }`
+
+# It's worthy to note that in many-to-many relationships, they are defined as belongsTo(), not hasMany()
+
+# Controllers help keep the routes file clean
+
+# Make a new controller with: `php artisan make:controller <name of controller>`
+
+###
+
+HOME PAGE
+
+-   Home table: id, timestamps, name, description, logo [tip: migrate]
+-   Home model [tip: prevent default table][tip: $fillable]
+-   Home views: create, success & home
+-   Home controller [tip: it's for a resource]
+-   Home web route [tip: it's a resource]
+    [tip: ```php artisan route:list``` will list out the routes you have registered]
+-   Home controller: create() method
+-   Home controller: store() method [tip: request.file() then store() in logos dir of public disk][tip: use home model and storage]
+-   Home controller: index() method
+
+DATABASE STRUCTURE & RELATION
+
+-   Users table: id int ai | name str cnbe | email str cnbe | password str
+-   Categories table: name str cnbe | slug str unique cnbe | description txt cbe
+-   Tags table: name str cnbe | slug str unique cnbe | description txt cbe
+-   Posts table: title str cnbe | slug str unique cnbe | featured_image str_or_txt cbe | content txt cnbe | is_published bool
+    [tip: unique() and nullable() methods will come in handy in migrations tables]
+-   Design Relations (6):
+-   -   Each user has multiple posts
+-   -   Each category has many posts
+-   -   Each tag has many posts
+-   -   Each post belongs to one user
+-   -   Each post belongs to one category
+-   -   Each post has many tags
+        [tip: bigInt for ids showing relation][tip: many-to-many relations require a new table with id maps][tip: migrate!]
+-   Install voyager: composer require tcg/voyager -> php artisan voyager:install -> php artisan voyager:admin <email address> --create
+-   Add BREAD to categories, tags and posts tables, point to correct path, edit rows [tip: slugify{origin, forceUpdate}][tip: voyager has post built in so default url should be changed to my-posts][tip: change posts url in menubuilder as well]
+-   Set relations in voyager
+
+VIEW STRUCTURE, ROUTES & CONTROLLERS
+
+-   Generate controllers for Home, Category, Post and Tag
+-   Home Controller: import category, post and tag models, get all the categories, get published posts by descending order of id, get all the tags, return home view with all categories, posts and tags [tip: this is "show"ing the Home Page]
+-   Set route that points to the Home Controller
+-   Category Controller: get the requested category, get the posts in that category, get all the categories, get all the tags, return category view with requested category, its posts, all categories and all tags [tip: this is "index"ing the slug]
+-   Set route that points to the Category Controller
+-   Tag Controller is the same as Category Controller
+-   Post Controller: get requested post if published, get all tags for requested post, get all categories, get all tags, return post view with assigned vars [tip: this is "show"ing the post slug]
+-   Set route that points to the Post Controller
